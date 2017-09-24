@@ -1,5 +1,7 @@
 package com.droux.jtshirt.data.bean;
 
+import com.droux.jtshirt.controller.form.TshirtForm;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,7 +12,7 @@ import java.math.BigDecimal;
 public class Tshirt {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private Integer id;
+    private Long id;
     private String name;
     private String size;
     private String color;
@@ -18,11 +20,11 @@ public class Tshirt {
     private String image;
     private Integer quantity;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -72,5 +74,18 @@ public class Tshirt {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public Tshirt() {
+    }
+
+    public Tshirt(TshirtForm form) {
+        this.id = form.getId();
+        this.name = form.getName();
+        this.size = form.getSize();
+        this.color = form.getColor();
+        this.price = form.getPrice();
+        this.image = form.getImage();
+        this.quantity = form.getQuantity();
     }
 }

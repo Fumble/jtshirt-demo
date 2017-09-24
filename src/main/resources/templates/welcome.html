@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link th:href="@{../css/bootstrap.min.css}" rel="stylesheet" />
+    <link href="css/starter-template.css" rel="stylesheet" />
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="#">Tshirt Demo</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>T-shirts list</h1>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Color</th>
+            <th>Size</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="row,status : ${tshirtsList}">
+            <th class="tg bg" th:text="${status.count}" scope="row"></th>
+            <td class="tg bg"><a th:href="@{/tshirts/view(id=${row.id})}" th:text="${row.name}"></a></td>
+            <td class="tg bg" th:text="${row.color}"></td>
+            <td class="tg bg" th:text="${row.size}"></td>
+            <td class="tg bg" th:text="${row.price}"></td>
+            <td class="tg bg" th:text="${row.quantity}"></td>
+            <td>
+                <a th:href="@{/tshirts/delete(id=${row.id})}" type="button" class="btn btn-danger btn-sm">
+                    <img src="../img/trashcan.svg" />
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div>
+        <a th:href="@{/tshirts/view}" type="button" class="btn btn-primary">
+            Add a new t-shirt
+        </a>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="../js/bootstrap.min.js"></script>
+
+</body>
+</html>

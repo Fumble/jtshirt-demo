@@ -1,5 +1,6 @@
 package com.droux.jtshirt.controller.form;
 
+import com.droux.jtshirt.data.bean.Tshirt;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Min;
@@ -8,6 +9,7 @@ import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
 public class TshirtForm {
+    private Long id;
     @NotBlank
     @Size(min = 2, max = 255)
     private String name;
@@ -22,6 +24,14 @@ public class TshirtForm {
     @NotNull
     @Min(0)
     private Integer quantity;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -69,5 +79,19 @@ public class TshirtForm {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public TshirtForm(){
+
+    }
+
+    public TshirtForm(Tshirt form) {
+        this.id = form.getId();
+        this.name = form.getName();
+        this.size = form.getSize();
+        this.color = form.getColor();
+        this.price = form.getPrice();
+        this.image = form.getImage();
+        this.quantity = form.getQuantity();
     }
 }
