@@ -67,7 +67,7 @@ public class TshirtController {
     public String deleteTshirt(@RequestParam Long id) {
         logger.info("Deleting t-shirt #" + id);
         tshirtRepository.delete(id);
-        return "tshirt";
+        return "redirect:/";
     }
 
     public TshirtController(TshirtRepository tshirtRepository, Environment env) {
