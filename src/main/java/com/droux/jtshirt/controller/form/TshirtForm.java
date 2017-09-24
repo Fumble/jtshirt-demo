@@ -4,7 +4,6 @@ import com.droux.jtshirt.data.bean.Tshirt;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
@@ -17,11 +16,9 @@ public class TshirtForm {
     private String size;
     @NotBlank
     private String color;
-    @NotNull
     @Min(0)
     private BigDecimal price;
     private String image;
-    @NotNull
     @Min(0)
     private Integer quantity;
 
