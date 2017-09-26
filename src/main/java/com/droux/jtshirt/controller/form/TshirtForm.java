@@ -1,11 +1,14 @@
 package com.droux.jtshirt.controller.form;
 
-import com.droux.jtshirt.data.bean.Tshirt;
-import org.hibernate.validator.constraints.NotBlank;
+import java.math.BigDecimal;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
-import java.math.BigDecimal;
+
+import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.droux.jtshirt.data.bean.Tshirt;
 
 public class TshirtForm {
     private Long id;
@@ -21,6 +24,7 @@ public class TshirtForm {
     private String image;
     @Min(0)
     private Integer quantity;
+    private MultipartFile imageFile;
 
     public Long getId() {
         return id;
@@ -82,13 +86,21 @@ public class TshirtForm {
 
     }
 
-    public TshirtForm(Tshirt form) {
-        this.id = form.getId();
-        this.name = form.getName();
-        this.size = form.getSize();
-        this.color = form.getColor();
-        this.price = form.getPrice();
-        this.image = form.getImage();
-        this.quantity = form.getQuantity();
+    public TshirtForm(Tshirt bean) {
+        this.id = bean.getId();
+        this.name = bean.getName();
+        this.size = bean.getSize();
+        this.color = bean.getColor();
+        this.price = bean.getPrice();
+        this.image = bean.getImage();
+        this.quantity = bean.getQuantity();
+    }
+
+    public MultipartFile getImageFile() {
+        return imageFile;
+    }
+
+    public void setImageFile(MultipartFile imageFile) {
+        this.imageFile = imageFile;
     }
 }

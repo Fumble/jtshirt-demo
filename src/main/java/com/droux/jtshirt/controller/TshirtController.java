@@ -1,43 +1,41 @@
 package com.droux.jtshirt.controller;
 
-import com.droux.jtshirt.controller.form.TshirtForm;
-import com.droux.jtshirt.data.bean.Tshirt;
-import com.droux.jtshirt.data.repository.TshirtRepository;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
+
+import javax.activation.MimetypesFileTypeMap;
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
-import java.util.Arrays;
+import com.droux.jtshirt.controller.form.TshirtForm;
+import com.droux.jtshirt.controller.storage.StorageService;
+import com.droux.jtshirt.data.bean.Tshirt;
+import com.droux.jtshirt.data.repository.TshirtRepository;
 
 @Controller
 @RequestMapping(path="/tshirts")
 public class TshirtController {
     private TshirtRepository tshirtRepository;
     private Environment env;
+    private final StorageService storageService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-
-    @GetMapping(path="/add")
-    public @ResponseBody String addNewTshirt (@RequestParam String name, @RequestParam String color) {
-        Tshirt n = new Tshirt();
-        n.setName(name);
-        n.setColor(color);
-        tshirtRepository.save(n);
-        return "Saved";
-    }
-
-    @GetMapping(path="/all")
-    public @ResponseBody
-    Iterable<Tshirt> getAllTshirts() {
-        logger.info("Colors: " + env.getProperty("tshirt.list.colors"));
-        logger.info("Sizes: " + env.getProperty("tshirt.list.sizes"));
-        return tshirtRepository.findAll();
-    }
 
     @GetMapping(path="/view")
     public String getTshirt(@RequestParam(required = false) Long id, Model model) {
@@ -54,11 +52,24 @@ public class TshirtController {
     @PostMapping(path="/save")
     public String saveTshirt(@Valid TshirtForm form, BindingResult result, Model model) {
         logger.info("Saving tshirt #" + form.getId());
+        // Checking if the uploaded file is an image
+        if(form.getImageFile() != null) {
+            try {
+                if(!isImage(multipartToFile(form.getImageFile()))) {
+                    result.rejectValue("imageFile", "error.file.not.image");
+                }
+            } catch (IOException e) {
+                logger.error("IOException while checking the uploaded file");
+                result.rejectValue("imageFile", "error.file.check");
+            }
+        }
+
         if (result.hasErrors()) {
             model.addAttribute("colors", Arrays.asList(env.getProperty("tshirt.list.colors").split(",")));
             model.addAttribute("sizes", Arrays.asList(env.getProperty("tshirt.list.sizes").split(",")));
             return "tshirt";
         }
+        storageService.store(form.getImageFile());
         tshirtRepository.save(new Tshirt(form));
         return "redirect:/";
     }
@@ -70,8 +81,36 @@ public class TshirtController {
         return "redirect:/";
     }
 
-    public TshirtController(TshirtRepository tshirtRepository, Environment env) {
+    @GetMapping("/getImage")
+    @ResponseBody
+    public ResponseEntity<Resource> serveFile(@RequestParam String filename) {
+
+        Resource file = storageService.loadAsResource(filename);
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
+                "inline; filename=\"" + file.getFilename() + "\"").body(file);
+    }
+
+    public TshirtController(TshirtRepository tshirtRepository, Environment env, StorageService storageService) {
         this.tshirtRepository = tshirtRepository;
         this.env = env;
+        this.storageService = storageService;
+    }
+
+    public File multipartToFile(MultipartFile multipart) throws IllegalStateException, IOException {
+        File convFile = new File(multipart.getOriginalFilename());
+        convFile.createNewFile();
+        FileOutputStream fos = new FileOutputStream(convFile);
+        fos.write(multipart.getBytes());
+        fos.close();
+        return convFile;
+    }
+
+    public boolean isImage(File f) {
+        MimetypesFileTypeMap mtftp = new MimetypesFileTypeMap();
+        mtftp.addMimeTypes("image png tif jpg jpeg bmp");
+        String mimetype = new MimetypesFileTypeMap().getContentType(f);
+        logger.info("MimeType: " + mimetype);
+        String type = mimetype.split("/")[0];
+        return type.equals("image");
     }
 }

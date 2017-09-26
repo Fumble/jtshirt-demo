@@ -1,12 +1,13 @@
 package com.droux.jtshirt.data.bean;
 
-import com.droux.jtshirt.controller.form.TshirtForm;
+import java.math.BigDecimal;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.math.BigDecimal;
+
+import com.droux.jtshirt.controller.form.TshirtForm;
 
 @Entity
 public class Tshirt {
@@ -85,7 +86,7 @@ public class Tshirt {
         this.size = form.getSize();
         this.color = form.getColor();
         this.price = form.getPrice();
-        this.image = form.getImage();
+        this.image = form.getImageFile().getOriginalFilename();
         this.quantity = form.getQuantity();
     }
 }
