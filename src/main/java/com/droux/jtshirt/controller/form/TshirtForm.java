@@ -3,6 +3,7 @@ package com.droux.jtshirt.controller.form;
 import java.math.BigDecimal;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotBlank;
@@ -19,9 +20,11 @@ public class TshirtForm {
     private String size;
     @NotBlank
     private String color;
+    @NotNull
     @Min(0)
     private BigDecimal price;
     private String image;
+    @NotNull
     @Min(0)
     private Integer quantity;
     private MultipartFile imageFile;

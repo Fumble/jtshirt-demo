@@ -33,7 +33,7 @@ import com.droux.jtshirt.data.repository.TshirtRepository;
 @Controller
 @RequestMapping(path="/tshirts")
 public class TshirtController {
-    public static final String IMAGE_FILE = "imageFile";
+    private static final String IMAGE_FILE = "imageFile";
     private final TshirtRepository tshirtRepository;
     private Environment env;
     private final StorageService storageService;
@@ -59,12 +59,14 @@ public class TshirtController {
             result.rejectValue(IMAGE_FILE, "error.file.mandatory");
             checkImage = false;
         } else if(form.getId() != null) {
-            Tshirt old = tshirtRepository.findOne(form.getId());
-            if(old != null && old.getImage() != null) {
-                checkImage = !old.getImage().equals(form.getImage());
-                if(!checkImage) {
-                    form.setImage(old.getImage());
+            // We need to check if the user wants to update the image
+            if(!StringUtils.isEmpty(form.getImageFile().getOriginalFilename())) {
+                Tshirt old = tshirtRepository.findOne(form.getId());
+                if (old != null) {
+                    checkImage = !old.getImage().equals(form.getImageFile().getOriginalFilename());
                 }
+            } else {
+                checkImage = false;
             }
         }
         // Checking if the uploaded file is an image
@@ -106,7 +108,7 @@ public class TshirtController {
         this.storageService = storageService;
     }
 
-    public File multipartToFile(MultipartFile multipart) throws IllegalStateException, IOException {
+    private File multipartToFile(MultipartFile multipart) throws IllegalStateException, IOException {
         File convFile = new File(env.getProperty("storage.location") + File.separator
                 + multipart.getOriginalFilename());
         convFile.createNewFile();
@@ -116,7 +118,7 @@ public class TshirtController {
         return convFile;
     }
 
-    public boolean isImage(File f) {
+    private boolean isImage(File f) {
         MimetypesFileTypeMap mtftp = new MimetypesFileTypeMap();
         mtftp.addMimeTypes("image png tif jpg jpeg bmp");
         String mimetype = new MimetypesFileTypeMap().getContentType(f);
@@ -126,16 +128,15 @@ public class TshirtController {
     }
 
     public BindingResult checkimage(BindingResult result, TshirtForm form) {
-        BindingResult tmp = result;
         form.setImage(form.getImageFile().getOriginalFilename());
         try {
             if(!isImage(multipartToFile(form.getImageFile()))) {
-                tmp.rejectValue(IMAGE_FILE, "error.file.not.image");
+                result.rejectValue(IMAGE_FILE, "error.file.not.image");
             }
         } catch (IOException e) {
             logger.error("IOException while checking the uploaded file", e);
-            tmp.rejectValue(IMAGE_FILE, "error.file.check");
+            result.rejectValue(IMAGE_FILE, "error.file.check");
         }
-        return tmp;
+        return result;
     }
 }
