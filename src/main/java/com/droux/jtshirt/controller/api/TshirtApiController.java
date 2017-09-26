@@ -11,8 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.droux.jtshirt.controller.exception.TshirtNotFoundException;
@@ -28,24 +28,28 @@ public class TshirtApiController {
     private TshirtRepository tshirtRepository;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @GetMapping(path="/all")
+    @GetMapping()
     public @ResponseBody List<Tshirt> getAllTshirts() {
         Iterable<Tshirt> tshirts = tshirtRepository.findAll();
         List<Tshirt> list = new ArrayList<>();
         for(Tshirt tshirt: tshirts) {
-           tshirt.setImage(imageToBase64(tshirt.getImage()));
-           list.add(tshirt);
+            if(tshirt.getImage() != null) {
+                tshirt.setImage(imageToBase64(tshirt.getImage()));
+            }
+            list.add(tshirt);
         }
         return list;
     }
 
-    @GetMapping(path="/view")
-    public @ResponseBody Tshirt getTshirt(@RequestParam Long id) {
+    @GetMapping(value="/{id}")
+    public @ResponseBody Tshirt getTshirt(@PathVariable Long id) {
         Tshirt tshirt = tshirtRepository.findOne(id);
         if(tshirt == null) {
             throw new TshirtNotFoundException("T-shirt " + id + " not found");
         }
-        tshirt.setImage(imageToBase64(tshirt.getImage()));
+        if(tshirt.getImage() != null) {
+            tshirt.setImage(imageToBase64(tshirt.getImage()));
+        }
         return tshirt;
     }
 

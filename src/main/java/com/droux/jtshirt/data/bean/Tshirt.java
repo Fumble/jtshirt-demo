@@ -89,4 +89,13 @@ public class Tshirt {
         this.image = form.getImage();
         this.quantity = form.getQuantity();
     }
+
+    public Tshirt(String name, String size, String color, BigDecimal price, String image, Integer quantity) {
+        this.name = name;
+        this.size = size;
+        this.color = color;
+        this.price = price;
+        this.image = image;
+        this.quantity = quantity;
+    }
 }

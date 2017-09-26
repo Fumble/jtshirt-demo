@@ -16,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,6 +33,7 @@ import com.droux.jtshirt.data.repository.TshirtRepository;
 @Controller
 @RequestMapping(path="/tshirts")
 public class TshirtController {
+    public static final String IMAGE_FILE = "imageFile";
     private final TshirtRepository tshirtRepository;
     private Environment env;
     private final StorageService storageService;
@@ -51,40 +53,30 @@ public class TshirtController {
 
     @PostMapping(path="/save")
     public String saveTshirt(@Valid TshirtForm form, BindingResult result, Model model) {
-        logger.info("Saving tshirt #" + form.getId());
-
-        boolean checkImage = false;
-        // In case we're updating the t-shirt, we need to check the image only if the user tries to upload a new one
-        if(form.getId() != null) {
+        logger.info("Saving tshirt #{}", form.getId());
+        boolean checkImage = true;
+        if(form.getImageFile().getOriginalFilename().isEmpty() && StringUtils.isEmpty(form.getImage())) {
+            result.rejectValue(IMAGE_FILE, "error.file.mandatory");
+            checkImage = false;
+        } else if(form.getId() != null) {
             Tshirt old = tshirtRepository.findOne(form.getId());
             if(old != null && old.getImage() != null) {
-                checkImage = !old.getImage().equals(form.getImageFile().getOriginalFilename())
-                        && !form.getImageFile().getOriginalFilename().isEmpty();
+                checkImage = !old.getImage().equals(form.getImage());
                 if(!checkImage) {
                     form.setImage(old.getImage());
                 }
             }
-        } else if(!form.getImageFile().getOriginalFilename().isEmpty()){
-            checkImage = true;
         }
         // Checking if the uploaded file is an image
-        if(form.getImageFile() != null && checkImage) {
-            form.setImage(form.getImageFile().getOriginalFilename());
-            try {
-                if(!isImage(multipartToFile(form.getImageFile()))) {
-                    result.rejectValue("imageFile", "error.file.not.image");
-                }
-            } catch (IOException e) {
-                logger.error("IOException while checking the uploaded file", e);
-                result.rejectValue("imageFile", "error.file.check");
-            }
+        if(checkImage) {
+            result = checkimage(result, form);
         }
-
         if (result.hasErrors()) {
             model.addAttribute("colors", Arrays.asList(env.getProperty("tshirt.list.colors").split(",")));
             model.addAttribute("sizes", Arrays.asList(env.getProperty("tshirt.list.sizes").split(",")));
             return "tshirt";
         }
+
         if(checkImage) {
             storageService.store(form.getImageFile());
         }
@@ -94,7 +86,7 @@ public class TshirtController {
 
     @GetMapping(path="/delete")
     public String deleteTshirt(@RequestParam Long id) {
-        logger.info("Deleting t-shirt #" + id);
+        logger.info("Deleting t-shirt #{}", id);
         tshirtRepository.delete(id);
         return "redirect:/";
     }
@@ -128,8 +120,22 @@ public class TshirtController {
         MimetypesFileTypeMap mtftp = new MimetypesFileTypeMap();
         mtftp.addMimeTypes("image png tif jpg jpeg bmp");
         String mimetype = new MimetypesFileTypeMap().getContentType(f);
-        logger.info("MimeType: " + mimetype);
+        logger.info("MimeType: {}", mimetype);
         String type = mimetype.split("/")[0];
         return type.equals("image");
+    }
+
+    public BindingResult checkimage(BindingResult result, TshirtForm form) {
+        BindingResult tmp = result;
+        form.setImage(form.getImageFile().getOriginalFilename());
+        try {
+            if(!isImage(multipartToFile(form.getImageFile()))) {
+                tmp.rejectValue(IMAGE_FILE, "error.file.not.image");
+            }
+        } catch (IOException e) {
+            logger.error("IOException while checking the uploaded file", e);
+            tmp.rejectValue(IMAGE_FILE, "error.file.check");
+        }
+        return tmp;
     }
 }
