@@ -86,7 +86,7 @@ public class Tshirt {
         this.size = form.getSize();
         this.color = form.getColor();
         this.price = form.getPrice();
-        this.image = form.getImageFile().getOriginalFilename();
+        this.image = form.getImage();
         this.quantity = form.getQuantity();
     }
 }

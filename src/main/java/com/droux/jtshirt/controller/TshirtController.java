@@ -52,14 +52,30 @@ public class TshirtController {
     @PostMapping(path="/save")
     public String saveTshirt(@Valid TshirtForm form, BindingResult result, Model model) {
         logger.info("Saving tshirt #" + form.getId());
+
+        boolean checkImage = false;
+        // In case we're updating the t-shirt, we need to check the image only if the user tries to upload a new one
+        if(form.getId() != null) {
+            Tshirt old = tshirtRepository.findOne(form.getId());
+            if(old != null && old.getImage() != null) {
+                checkImage = !old.getImage().equals(form.getImageFile().getOriginalFilename())
+                        && !form.getImageFile().getOriginalFilename().isEmpty();
+                if(!checkImage) {
+                    form.setImage(old.getImage());
+                }
+            }
+        } else if(!form.getImageFile().getOriginalFilename().isEmpty()){
+            checkImage = true;
+        }
         // Checking if the uploaded file is an image
-        if(form.getImageFile() != null) {
+        if(form.getImageFile() != null && checkImage) {
+            form.setImage(form.getImageFile().getOriginalFilename());
             try {
                 if(!isImage(multipartToFile(form.getImageFile()))) {
                     result.rejectValue("imageFile", "error.file.not.image");
                 }
             } catch (IOException e) {
-                logger.error("IOException while checking the uploaded file");
+                logger.error("IOException while checking the uploaded file", e);
                 result.rejectValue("imageFile", "error.file.check");
             }
         }
@@ -69,7 +85,9 @@ public class TshirtController {
             model.addAttribute("sizes", Arrays.asList(env.getProperty("tshirt.list.sizes").split(",")));
             return "tshirt";
         }
-        storageService.store(form.getImageFile());
+        if(checkImage) {
+            storageService.store(form.getImageFile());
+        }
         tshirtRepository.save(new Tshirt(form));
         return "redirect:/";
     }
