@@ -99,9 +99,9 @@ public class TshirtController {
     public File multipartToFile(MultipartFile multipart) throws IllegalStateException, IOException {
         File convFile = new File(multipart.getOriginalFilename());
         convFile.createNewFile();
-        FileOutputStream fos = new FileOutputStream(convFile);
-        fos.write(multipart.getBytes());
-        fos.close();
+        try (FileOutputStream fos = new FileOutputStream(convFile)){
+            fos.write(multipart.getBytes());
+        }
         return convFile;
     }
 
