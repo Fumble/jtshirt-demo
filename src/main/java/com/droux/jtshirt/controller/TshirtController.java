@@ -108,7 +108,7 @@ public class TshirtController {
         this.storageService = storageService;
     }
 
-    private File multipartToFile(MultipartFile multipart) throws IllegalStateException, IOException {
+    private File multipartToFile(MultipartFile multipart) throws IOException {
         File convFile = new File(env.getProperty("storage.location") + File.separator
                 + multipart.getOriginalFilename());
         convFile.createNewFile();

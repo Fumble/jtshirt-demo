@@ -86,7 +86,8 @@ public class TshirtForm {
     }
 
     public TshirtForm(){
-
+        this.price = BigDecimal.ZERO;
+        this.quantity = 0;
     }
 
     public TshirtForm(Tshirt bean) {
