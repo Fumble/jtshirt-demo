@@ -32,7 +32,7 @@ import com.droux.jtshirt.data.repository.TshirtRepository;
 @Controller
 @RequestMapping(path="/tshirts")
 public class TshirtController {
-    private TshirtRepository tshirtRepository;
+    private final TshirtRepository tshirtRepository;
     private Environment env;
     private final StorageService storageService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -115,7 +115,8 @@ public class TshirtController {
     }
 
     public File multipartToFile(MultipartFile multipart) throws IllegalStateException, IOException {
-        File convFile = new File(multipart.getOriginalFilename());
+        File convFile = new File(env.getProperty("storage.location") + File.separator
+                + multipart.getOriginalFilename());
         convFile.createNewFile();
         try (FileOutputStream fos = new FileOutputStream(convFile)){
             fos.write(multipart.getBytes());
