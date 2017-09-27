@@ -7,11 +7,14 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.droux.jtshirt.controller.exception.OrderNotFoundException;
 import com.droux.jtshirt.data.bean.OrderItem;
 import com.droux.jtshirt.data.bean.OrderRequest;
 import com.droux.jtshirt.data.bean.OrderRequestItem;
@@ -32,6 +35,15 @@ public class OrderApiController {
     private static final String TSHIRT_NO_STOCK = "TSHIRT_NO_STOCK";
     private static final String OK = "OK";
     private static final String KO = "KO";
+
+    @GetMapping(value="/{id}")
+    public @ResponseBody Orders getOrder(@PathVariable Long id) {
+        Orders order = orderRepository.findOne(id);
+        if(order == null) {
+            throw new OrderNotFoundException("Order " + id + " not found");
+        }
+        return order;
+    }
 
     @PostMapping(path = "/place", consumes = "application/json")
     public @ResponseBody
@@ -73,14 +85,13 @@ public class OrderApiController {
             responseItem.setPrice(tshirt.getPrice());
             BigDecimal price = tshirt.getPrice().multiply(new BigDecimal(orderItem.getQuantity()));
             order.setTotalAmount(order.getTotalAmount().add(price));
-            orderItem.setOrder(order);
             items.add(orderItem);
+            order.addItem(orderItem);
             responseItems.add(responseItem);
             // The new stock
             tshirt.setQuantity(tshirt.getQuantity() - ori.getQuantity());
             tshirts.add(tshirt);
         }
-        order.setItems(items);
         // We save the order and update the t-shirts stock only if everything is OK
         if(OK.equals(orderStatus)) {
             orderRepository.save(order);
