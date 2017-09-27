@@ -12,13 +12,13 @@ Be sure to look at application.properties to configure the app: server port, fol
 T-shirt CRUD  
 Image support  
 API for t-shirts listing  
-Tests for t-shirts API
-
-## TODO 
+Tests for t-shirts API  
 API for order  
 Backend auth with Spring security  
+
+## TODO 
 Tests for order API  
-Tests for t-shirts portal
+Tests for t-shirts portal (maybe)
 
 ## Won't be done
 Complete i18n with messages.properties. Currently, I use it only for custom error messages.
