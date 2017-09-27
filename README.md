@@ -15,9 +15,9 @@ API for t-shirts listing
 Tests for t-shirts API  
 API for order  
 Backend auth with Spring security  
-
-## TODO 
 Tests for order API  
+
+## TODO  
 Tests for t-shirts portal (maybe)
 
 ## Won't be done

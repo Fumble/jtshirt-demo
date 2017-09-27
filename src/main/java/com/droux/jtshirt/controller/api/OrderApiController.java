@@ -94,8 +94,9 @@ public class OrderApiController {
         }
         // We save the order and update the t-shirts stock only if everything is OK
         if(OK.equals(orderStatus)) {
-            orderRepository.save(order);
-            tshirtRepository.save(tshirts);
+           order = orderRepository.save(order);
+           response.setOrderId(order.getId());
+           tshirtRepository.save(tshirts);
         }
         response.setTotalAmount(order.getTotalAmount());
         response.setStatus(orderStatus);
