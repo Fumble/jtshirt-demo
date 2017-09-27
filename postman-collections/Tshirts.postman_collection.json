@@ -1,0 +1,54 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Tshirts",
+		"_postman_id": "20e4f00a-bf78-c6cd-0ce8-f6d175061775",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8090/api/tshirts/all",
+			"request": {
+				"url": "http://localhost:8090/api/tshirts",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8090/api/tshirts/view?id=1",
+			"request": {
+				"url": {
+					"raw": "http://localhost:8090/api/tshirts/view?id=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8090",
+					"path": [
+						"api",
+						"tshirts",
+						"view"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "1",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

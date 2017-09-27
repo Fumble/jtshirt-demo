@@ -1,0 +1,42 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Orders",
+		"_postman_id": "8b483972-1b5b-8266-16d8-4d35319da5ab",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8090/api/orders/place",
+			"request": {
+				"url": "http://localhost:8090/api/orders/place",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"orderDate\": \"2017-09-27T00:00:00.000Z\",\n  \"clientName\": \"John\",\n  \"items\": [\n    {\n      \"id\": 60,\n      \"quantity\": 1\n    },\n    {\n      \"id\": 65,\n      \"quantity\": 200\n    }\n  ]\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8090/api/orders/17",
+			"request": {
+				"url": "http://localhost:8090/api/orders/17",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
