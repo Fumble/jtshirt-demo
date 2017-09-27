@@ -83,14 +83,14 @@ public class TshirtController {
             storageService.store(form.getImageFile());
         }
         tshirtRepository.save(new Tshirt(form));
-        return "redirect:/";
+        return "redirect:/welcome";
     }
 
     @GetMapping(path="/delete")
     public String deleteTshirt(@RequestParam Long id) {
         logger.info("Deleting t-shirt #{}", id);
         tshirtRepository.delete(id);
-        return "redirect:/";
+        return "redirect:/welcome";
     }
 
     @GetMapping("/getImage")
@@ -127,7 +127,7 @@ public class TshirtController {
         return type.equals("image");
     }
 
-    public BindingResult checkimage(BindingResult result, TshirtForm form) {
+    private BindingResult checkimage(BindingResult result, TshirtForm form) {
         form.setImage(form.getImageFile().getOriginalFilename());
         try {
             if(!isImage(multipartToFile(form.getImageFile()))) {
