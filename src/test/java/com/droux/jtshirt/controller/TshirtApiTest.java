@@ -89,12 +89,12 @@ public class TshirtApiTest {
     @Before
     public void setup() throws Exception {
         tshirtRepository.deleteAll();
-        this.tshirtsList.add(tshirtRepository.save(new Tshirt("T1", "S", "Black",
-                new BigDecimal(10.98), null, 1)));
-        this.tshirtsList.add(tshirtRepository.save(new Tshirt("T2", "M", "Blue",
-                new BigDecimal(10), null, 2)));
-        this.tshirtsList.add(tshirtRepository.save(new Tshirt("T3", "L", "Pink",
-                new BigDecimal(105.99), null, 3)));
+        this.tshirtsList.add(tshirtRepository.save(new Tshirt(0L,"T1", "S", "Black",
+                new BigDecimal(10.98), "default.jpg", 1)));
+        this.tshirtsList.add(tshirtRepository.save(new Tshirt(0L,"T2", "M", "Blue",
+                new BigDecimal(10), "default.jpg", 2)));
+        this.tshirtsList.add(tshirtRepository.save(new Tshirt(0L,"T3", "L", "Pink",
+                new BigDecimal(105.99), "default.jpg", 3)));
     }
 
 }
